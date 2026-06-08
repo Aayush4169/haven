@@ -1,31 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout("/layouts/biolerplate")-%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <body>
+        <form method="POST" action="/listings/<%=data._id %>?_method=PUT">
 
-<body>
-    <form method="POST" action="/listings/<%=data._id %>?_method=PUT">
+            <input type="text" name="listing[title]" value=<%=data.title%>>
+            <br><br>
+            <textarea type="text" name="listing[description]"
+                placeholder="Enter your description"><%=data.description%></textarea>
+            <br><br>
+            <input type="text" name="listing[image]" value="<%=data.image%>">
+            <br><br>
+            <input type="number" name="listing[price]" value="<%=data.price%>">
+            <br><br>
+            <input type="text" name="listing[location]" value="<%=data.location%>">
+            <br><br>
+            <input type="text" name="listing[country]" value="<%=data.country%>">
+            <br><br>
+            <button>submit</button>
+        </form>
 
-        <input type="text" name="listing[title]" value=<%=data.title%>>
-        <br><br>
-        <textarea type="text" name="listing[description]"
-            placeholder="Enter your description"><%=data.description%></textarea>
-        <br><br>
-        <input type="text" name="listing[image]" value="<%=data.image%>">
-        <br><br>
-        <input type="number" name="listing[price]" value="<%=data.price%>">
-        <br><br>
-        <input type="text" name="listing[location]" value="<%=data.location%>">
-        <br><br>
-        <input type="text" name="listing[country]" value="<%=data.country%>">
-        <br><br>
-        <button>submit</button>
-    </form>
+    </body>
 
-</body>
-
-</html>
+    </html>

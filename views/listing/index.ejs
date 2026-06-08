@@ -1,27 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout("/layouts/biolerplate")-%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <body>
+        <h3>All listings</h3>
+        <!-- <form mathod="GET" action='/listings/new'>
+            <button>add listing</button>
+        </form> -->
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+            <%for(let listing of data){%>
+                <a href="listings/<%=listing._id%>" class="listing-link">
 
-<body>
-    <h3>All listings</h3>
-    <form mathod="GET" action='/listings/new'>
-        <button>add listing</button>
-    </form>
-    <ul>
-        <%for(let listing of data){%>
-            <li><a href="/listings/<%=listing._id%>">
-                    <%=listing.title%>
+                    <div class="card col" style="width: 20rem;">
+                        <img src="<%=listing.image%>" class="card-img-top" alt="listing_image" style="height:20rem">
+                        <div class="card-img-overlay">ABCDEF</div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <b>
+                                    <%=listing.title%>
+                                </b><br>
+                                &#8377; <%=listing.price.toLocaleString("en-IN")%>
+                            </p>
+                        </div>
+                    </div>
                 </a>
+                <%}%>
+        </div>
 
-            </li>
-            <%}%>
-    </ul>
 
-</body>
+        <!-- <ul>
+                    <%for(let listing of data){%>
+                        <li><a href="/listings/<%=listing._id%>">
+                                <%=listing.title%>
+                            </a>
 
-</html>
+                        </li>
+                        <%}%>
+                </ul> -->
+
+    </body>
