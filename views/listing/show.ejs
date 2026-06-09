@@ -1,32 +1,49 @@
 <% layout("/layouts/biolerplate")-%>
 
     <body>
+        <div class="row mt-3">
+            <div class="col-8 offset-2">
+                <h3>Listing Details</h3>
+            </div>
+            <div class="card col-6 offset-2">
+                <img src="<%=data.image%>" class="card-img-top show-img" alt="" listing_image />
+                <div class="card-body">
+                    <p class="card-text">
+                        <b>
+                            <%=data.title%>
+                        </b>
+                    </p>
+                    <p class="card-text">
+                        <b>
+                            <%=data.description%>
+                        </b>
+                    </p>
+                    <p class="card-text">
+                        <b>&#8377; <%=data.price.toLocaleString("en-IN")%></b>
+                    </p>
+                    <p class="card-text">
+                        <b>
+                            <%=data.location%>
+                        </b>
+                    </p>
+                    <p class="card-text">
+                        <b>
+                            <%=data.country%>
+                        </b>
+                    </p>
+                </div>
+            </div>
 
-        <ul>
-            <li>
-                <%=data.title%>
-            </li>
-            <li>
-                <%=data.description%>
-            </li>
-            <li>
-                &#8377; <%=data.price.toLocaleString("en-IN")%>
-            </li>
-            <li>
-                <%=data.location%>
-            </li>
-            <li>
-                <%=data.country%>
-            </li>
-        </ul>
+            <div class="btns">
+                <a href="/listings/<%=data._id%>/edit" class="btn btn-dark offset-2"> edit</a>
+                <form method="POST" action="/listings/<%= data._id %>?_method=DELETE">
+                    <button class="btn btn-dark offset-3">Delete</button>
+                </form>
+            </div>
 
 
 
-        <a href="/listings/<%=data._id%>/edit"> edit</a>
-        <br><br>
-        <form method="POST" action="/listings/<%= data._id %>?_method=DELETE">
-            <button>Delete</button>
-        </form>
+        </div>
 
     </body>
 

@@ -1,22 +1,54 @@
 <% layout("/layouts/biolerplate")-%>
 
     <body>
-        <form method="POST" action="/listings">
+        <div class="row mt-3">
+            <div class="col-8 offset-2">
+                <h2>Create a New Listings</h2>
+                <form method="POST" action="/listings">
 
-            <input type="text" name="listing[title]" placeholder="Enter your title">
-            <br><br>
-            <textarea type="text" name="listing[description]" placeholder="Enter your description"></textarea>
-            <br><br>
-            <input type="text" name="listing[image]" placeholder="Enter your image url">
-            <br><br>
-            <input type="number" name="listing[price]" placeholder="Enter your price">
-            <br><br>
-            <input type="text" name="listing[location]" placeholder="Enter your location">
-            <br><br>
-            <input type="text" name="listing[country]" placeholder="Enter your country">
-            <br><br>
-            <button>submit</button>
-        </form>
+
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">title</label>
+                        <input type=" text" name="listing[title]" placeholder="Enter your title" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">description</label>
+                        <textarea type="text" name="listing[description]" placeholder="Enter your description"
+                            class="form-control"></textarea>
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">image</label>
+                        <input type="text" name="listing[image]" placeholder="Enter your image url"
+                            class="form-control">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">price</label>
+                        <input type="number" name="listing[price]" placeholder="Enter your price" class="form-control">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">location</label>
+                        <input type="text" name="listing[location]" placeholder="Enter your location"
+                            class="form-control">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="country" class="form-label">country</label>
+                        <input type="text" name="listing[country]" placeholder="Enter your country"
+                            class="form-control">
+
+                    </div>
+                    <br />
+
+                    <button class="btn btn-dark">submit</button>
+                    <br><br>
+                </form>
+            </div>
+        </div>
     </body>
 
     </html>
