@@ -56,13 +56,17 @@ app.get("/listings", async (req, res) => {
 app.get("/listings/new", (req, res) => {
   res.render("listing/new.ejs");
 });
-app.post("/listings", async (req, res) => {
-  const data = req.body.listing;
+app.post("/listings", async (req, res, next) => {
+  try {
+    const data = req.body.listing;
 
-  let newdata = new listing(data);
+    let newdata = new listing(data);
 
-  await newdata.save();
-  res.redirect("/listings");
+    await newdata.save();
+    res.redirect("/listings");
+  } catch (err) {
+    next(err);
+  }
 });
 // edit render the page
 app.get("/listings/:id/edit", async (req, res) => {
@@ -74,7 +78,7 @@ app.get("/listings/:id/edit", async (req, res) => {
 app.put("/listings/:id", async (req, res) => {
   let { id } = req.params;
   await listing.findByIdAndUpdate(id, { ...req.body.listing });
-  res.redirect("/listings");
+  res.redirect(`/listings/${id}`);
 });
 // delete route
 app.delete("/listings/:id", async (req, res) => {
@@ -87,6 +91,10 @@ app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
   let data = await listing.findById(id);
   res.render("listing/show.ejs", { data });
+});
+
+app.use((err, req, res, next) => {
+  res.send("something went worng");
 });
 app.listen("3000", () => {
   console.log("app is listening on port 3000");
