@@ -70,27 +70,43 @@ app.post("/listings", async (req, res, next) => {
 });
 // edit render the page
 app.get("/listings/:id/edit", async (req, res) => {
-  let { id } = req.params;
-  let data = await listing.findById(id);
-  res.render("listing/edit.ejs", { data });
+  try {
+    let { id } = req.params;
+    let data = await listing.findById(id);
+    res.render("listing/edit.ejs", { data });
+  } catch (err) {
+    next(err);
+  }
 });
 // put method to update the data
 app.put("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  await listing.findByIdAndUpdate(id, { ...req.body.listing });
-  res.redirect(`/listings/${id}`);
+  try {
+    let { id } = req.params;
+    await listing.findByIdAndUpdate(id, { ...req.body.listing });
+    res.redirect(`/listings/${id}`);
+  } catch (err) {
+    next(err);
+  }
 });
 // delete route
 app.delete("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  await listing.findByIdAndDelete(id);
-  res.redirect("/listings");
+  try {
+    let { id } = req.params;
+    await listing.findByIdAndDelete(id);
+    res.redirect("/listings");
+  } catch (err) {
+    next(err);
+  }
 });
 //  show routeee
 app.get("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  let data = await listing.findById(id);
-  res.render("listing/show.ejs", { data });
+  try {
+    let { id } = req.params;
+    let data = await listing.findById(id);
+    res.render("listing/show.ejs", { data });
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use((err, req, res, next) => {
