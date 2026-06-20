@@ -6,6 +6,9 @@ const path = require("path");
 const methodOverride = require("method-override");
 const { runInNewContext } = require("vm");
 const ejsMate = require("ejs-mate");
+const wrapasync = require("./utils/wrapasync");
+const Expresserror = require("./utils/customerror.js");
+const listingSchema = require("./schema.js"); // this  is join for validation
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -18,6 +21,21 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/haven");
 }
 
+//  validation function for joi that pacjage we define  it check the listing and its propertiess are available or not
+
+function validation(req, res, next) {
+  let { error } = listingSchema.validate(req.body);
+  if (error) {
+    const errmsg = error.details
+      .map((ele) => {
+        return ele.message;
+      })
+      .join(",");
+    throw new Expresserror(403, errmsg);
+  } else {
+    next();
+  }
+}
 main()
   .then(() => {
     console.log("connected to Mongo DB");
@@ -46,71 +64,79 @@ app.get("/", (req, res) => {
 // });
 
 // index route showing all the data
-app.get("/listings", async (req, res) => {
-  const data = await listing.find();
+app.get(
+  "/listings",
+  wrapasync(async (req, res) => {
+    const data = await listing.find();
 
-  res.render("listing/index.ejs", { data });
-});
+    res.render("listing/index.ejs", { data });
+  }),
+);
 // add new listing route
 
 app.get("/listings/new", (req, res) => {
   res.render("listing/new.ejs");
 });
-app.post("/listings", async (req, res, next) => {
-  try {
+// create  Route
+app.post(
+  "/listings",
+  validation,
+  wrapasync(async (req, res, next) => {
+    const result = listingSchema.validate(req.body);
+
+    console.log(req.body.listing);
     const data = req.body.listing;
 
     let newdata = new listing(data);
 
     await newdata.save();
     res.redirect("/listings");
-  } catch (err) {
-    next(err);
-  }
-});
+  }),
+);
 // edit render the page
-app.get("/listings/:id/edit", async (req, res) => {
-  try {
+app.get(
+  "/listings/:id/edit",
+  wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
     res.render("listing/edit.ejs", { data });
-  } catch (err) {
-    next(err);
-  }
-});
+  }),
+);
 // put method to update the data
-app.put("/listings/:id", async (req, res) => {
-  try {
+app.put(
+  "/listings/:id",
+  validation,
+  wrapasync(async (req, res) => {
     let { id } = req.params;
     await listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listings/${id}`);
-  } catch (err) {
-    next(err);
-  }
-});
+  }),
+);
 // delete route
-app.delete("/listings/:id", async (req, res) => {
-  try {
+app.delete(
+  "/listings/:id",
+  wrapasync(async (req, res) => {
     let { id } = req.params;
     await listing.findByIdAndDelete(id);
     res.redirect("/listings");
-  } catch (err) {
-    next(err);
-  }
-});
+  }),
+);
 //  show routeee
-app.get("/listings/:id", async (req, res) => {
-  try {
+app.get(
+  "/listings/:id",
+  wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
     res.render("listing/show.ejs", { data });
-  } catch (err) {
-    next(err);
-  }
+  }),
+);
+app.all("/*splat", (req, res, next) => {
+  next(new Expresserror(404, "page not found"));
 });
 
 app.use((err, req, res, next) => {
-  res.send("something went worng");
+  const { status = 500, message = "something went wrong" } = err;
+  res.status(status).render("listing/error.ejs", { err });
 });
 app.listen("3000", () => {
   console.log("app is listening on port 3000");
