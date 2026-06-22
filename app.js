@@ -8,7 +8,8 @@ const { runInNewContext } = require("vm");
 const ejsMate = require("ejs-mate");
 const wrapasync = require("./utils/wrapasync");
 const Expresserror = require("./utils/customerror.js");
-const listingSchema = require("./schema.js"); // this  is join for validation
+const { listingSchema, reviewSchema } = require("./schema.js"); // this  is join for validation
+const review = require("./models/review.js");
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -36,6 +37,17 @@ function validation(req, res, next) {
     next();
   }
 }
+function validaterev(req, res, next) {
+  console.log("Review route hit");
+  let { error } = reviewSchema.validate(req.body);
+  if (error) {
+    let errmsg = error.details.map((ele) => ele.message);
+    throw new Expresserror(403, errmsg);
+  } else {
+    next();
+  }
+}
+
 main()
   .then(() => {
     console.log("connected to Mongo DB");
@@ -43,7 +55,10 @@ main()
   .catch((err) => {
     console.log(err);
   });
-
+app.post("/test", (req, res) => {
+  console.log("Test route");
+  res.send("OK");
+});
 app.get("/", (req, res) => {
   res.send("this is root directory");
 });
@@ -67,7 +82,7 @@ app.get("/", (req, res) => {
 app.get(
   "/listings",
   wrapasync(async (req, res) => {
-    const data = await listing.find();
+    const data = await listing.find().populate("reviews");
 
     res.render("listing/index.ejs", { data });
   }),
@@ -82,9 +97,6 @@ app.post(
   "/listings",
   validation,
   wrapasync(async (req, res, next) => {
-    const result = listingSchema.validate(req.body);
-
-    console.log(req.body.listing);
     const data = req.body.listing;
 
     let newdata = new listing(data);
@@ -126,8 +138,35 @@ app.get(
   "/listings/:id",
   wrapasync(async (req, res) => {
     let { id } = req.params;
-    let data = await listing.findById(id);
+    let data = await listing.findById(id).populate("reviews");
     res.render("listing/show.ejs", { data });
+  }),
+);
+// vreatin routes for reviewssss
+
+app.post(
+  "/listings/:id/reviews",
+  validaterev,
+  wrapasync(async (req, res) => {
+    console.log("Review route hit");
+    let rev = req.body.review;
+    let id = req.params.id;
+    let newrev = new review(rev);
+    await newrev.save();
+    let Listing = await listing.findById(id);
+    Listing.reviews.push(newrev);
+    await Listing.save();
+    res.redirect(`/listings/${id}`);
+  }),
+);
+// deleet  route
+app.delete(
+  "/listings/:id/reviews/:reviewId",
+  wrapasync(async (req, res) => {
+    let { id, reviewId } = req.params;
+    await review.findByIdAndDelete(reviewId);
+    await listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    res.redirect(`/listings/${id}`);
   }),
 );
 app.all("/*splat", (req, res, next) => {
