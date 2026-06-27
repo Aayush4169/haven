@@ -128,6 +128,7 @@ app.put(
 app.delete(
   "/listings/:id",
   wrapasync(async (req, res) => {
+    console.log("delete route hit ittt");
     let { id } = req.params;
     await listing.findByIdAndDelete(id);
     res.redirect("/listings");
@@ -148,7 +149,6 @@ app.post(
   "/listings/:id/reviews",
   validaterev,
   wrapasync(async (req, res) => {
-    console.log("Review route hit");
     let rev = req.body.review;
     let id = req.params.id;
     let newrev = new review(rev);
@@ -163,6 +163,7 @@ app.post(
 app.delete(
   "/listings/:id/reviews/:reviewId",
   wrapasync(async (req, res) => {
+    console.log("Review route hitvalidateeeeee");
     let { id, reviewId } = req.params;
     await review.findByIdAndDelete(reviewId);
     await listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
