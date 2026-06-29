@@ -1,9 +1,9 @@
 const express = require("express");
-const router = express.Router();
-const listing = require("./models/listing.js");
-const wrapasync = require("./utils/wrapasync");
-const Expresserror = require("./utils/customerror.js");
-const { listingSchema, reviewSchema } = require("./schema.js");
+const router = express.Router({ mergeParams: true });
+const listing = require("../models/listing.js");
+const wrapasync = require("../utils/wrapasync");
+const Expresserror = require("../utils/customerror.js");
+const { listingSchema, reviewSchema } = require("../schema.js");
 
 function validation(req, res, next) {
   let { error } = listingSchema.validate(req.body);
@@ -20,7 +20,7 @@ function validation(req, res, next) {
 }
 // index route showing all the data
 router.get(
-  "/listings",
+  "/",
   wrapasync(async (req, res) => {
     const data = await listing.find();
 
@@ -29,12 +29,12 @@ router.get(
 );
 // add new listing route
 
-router.get("/listings/new", (req, res) => {
+router.get("/new", (req, res) => {
   res.render("listing/new.ejs");
 });
 // create  Route
 router.post(
-  "/listings",
+  "/",
   validation,
   wrapasync(async (req, res, next) => {
     const data = req.body.listing;
@@ -47,7 +47,7 @@ router.post(
 );
 // edit render the page
 router.get(
-  "/listings/:id/edit",
+  "/:id/edit",
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
@@ -56,7 +56,7 @@ router.get(
 );
 // put method to update the data
 router.put(
-  "/listings/:id",
+  "/:id",
   validation,
   wrapasync(async (req, res) => {
     let { id } = req.params;
@@ -66,7 +66,7 @@ router.put(
 );
 // delete route
 router.delete(
-  "/listings/:id",
+  "/:id",
   wrapasync(async (req, res) => {
     console.log("delete route hit ittt");
     let { id } = req.params;
@@ -76,7 +76,7 @@ router.delete(
 );
 //  show routeee
 router.get(
-  "/listings/:id",
+  "/:id",
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id).populate("reviews");

@@ -1,15 +1,15 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const listing = require("./models/listing.js");
+
 const path = require("path");
 const methodOverride = require("method-override");
 const { runInNewContext } = require("vm");
 const ejsMate = require("ejs-mate");
-const wrapasync = require("./utils/wrapasync");
 const Expresserror = require("./utils/customerror.js");
-const { listingSchema, reviewSchema } = require("./schema.js"); // this  is join for validation
-const review = require("./models/review.js");
+// this  is join for validation
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/reviews.js");
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -24,30 +24,6 @@ async function main() {
 
 //  validation function for joi that pacjage we define  it check the listing and its propertiess are available or not
 
-function validation(req, res, next) {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    const errmsg = error.details
-      .map((ele) => {
-        return ele.message;
-      })
-      .join(",");
-    throw new Expresserror(403, errmsg);
-  } else {
-    next();
-  }
-}
-function validaterev(req, res, next) {
-  console.log("Review route hit");
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errmsg = error.details.map((ele) => ele.message);
-    throw new Expresserror(403, errmsg);
-  } else {
-    next();
-  }
-}
-
 main()
   .then(() => {
     console.log("connected to Mongo DB");
@@ -55,56 +31,13 @@ main()
   .catch((err) => {
     console.log(err);
   });
-app.post("/test", (req, res) => {
-  console.log("Test route");
-  res.send("OK");
-});
+
 app.get("/", (req, res) => {
   res.send("this is root directory");
 });
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
 
-// llisting routing
-
-// app.get("/listing", async (req, res) => {
-//   let sampletesting = new listing({
-//     title: "my house",
-//     description: "sweat home",
-//     price: "1500",
-//     location: "barwani , Indore",
-//     country: "India",
-//   });
-//   await sampletesting.save();
-//   console.log("sample was save ");
-//   res.send("done");
-// });
-
-// vreatin routes for reviewssss
-
-app.post(
-  "/listings/:id/reviews",
-  validaterev,
-  wrapasync(async (req, res) => {
-    let rev = req.body.review;
-    let id = req.params.id;
-    let newrev = new review(rev);
-    await newrev.save();
-    let Listing = await listing.findById(id);
-    Listing.reviews.push(newrev);
-    await Listing.save();
-    res.redirect(`/listings/${id}`);
-  }),
-);
-// deleet  route
-app.delete(
-  "/listings/:id/reviews/:reviewId",
-  wrapasync(async (req, res) => {
-    console.log("Review route hitvalidateeeeee");
-    let { id, reviewId } = req.params;
-    await review.findByIdAndDelete(reviewId);
-    await listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    res.redirect(`/listings/${id}`);
-  }),
-);
 app.all("/*splat", (req, res, next) => {
   next(new Expresserror(404, "page not found"));
 });
