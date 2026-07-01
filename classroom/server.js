@@ -1,11 +1,16 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 
 const session = require("express-session");
+const flash = require("connect-flash");
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/view"));
 
 app.use(
   session({ secret: "keyboard cat", resave: false, saveUninitialized: true }),
 );
+app.use(flash());
 app.get("/", (req, res) => {
   console.log("hello");
   res.send("rooot");
@@ -22,11 +27,15 @@ app.get("/", (req, res) => {
 app.get("/register", (req, res) => {
   let { name = "anonouymous" } = req.query;
   req.session.name = name;
+  req.flash("sucess", "user login successfullyy");
   res.redirect("/hello");
 });
 app.get("/hello", (req, res) => {
   console.log(req.session.name);
-  res.send(`hello ${req.session.name}`);
+  res.render("page.ejs", {
+    name: req.session.name,
+    msg: req.flash("sucess"),
+  });
 });
 app.listen("3000", () => {
   console.log("app is listening on port 3000");
