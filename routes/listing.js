@@ -42,6 +42,7 @@ router.post(
     let newdata = new listing(data);
 
     await newdata.save();
+    req.flash("sucess", "listing is added successfully");
     res.redirect("/listings");
   }),
 );
@@ -51,6 +52,7 @@ router.get(
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
+
     res.render("listing/edit.ejs", { data });
   }),
 );
@@ -61,6 +63,7 @@ router.put(
   wrapasync(async (req, res) => {
     let { id } = req.params;
     await listing.findByIdAndUpdate(id, { ...req.body.listing });
+    req.flash("sucess", "editing is  succesfull");
     res.redirect(`/listings/${id}`);
   }),
 );
@@ -71,6 +74,7 @@ router.delete(
     console.log("delete route hit ittt");
     let { id } = req.params;
     await listing.findByIdAndDelete(id);
+    req.flash("sucess", "listing is deleted  succesfull");
     res.redirect("/listings");
   }),
 );
@@ -80,6 +84,10 @@ router.get(
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id).populate("reviews");
+    if (!data) {
+      req.flash("error", "listing is not available");
+      return res.redirect("/listings");
+    }
     res.render("listing/show.ejs", { data });
   }),
 );

@@ -1,32 +1,33 @@
 <% layout("/layouts/biolerplate")-%>
+    <%=sucess%>
 
-    <body>
-        <h3>All listings</h3>
-        <!-- <form mathod="GET" action='/listings/new'>
+        <body>
+            <h3>All listings</h3>
+            <!-- <form mathod="GET" action='/listings/new'>
             <button>add listing</button>
         </form> -->
-        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
-            <%for(let listing of data){%>
-                <a href="listings/<%=listing._id%>" class="listing-link">
+            <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+                <%for(let listing of data){%>
+                    <a href="listings/<%=listing._id%>" class="listing-link">
 
-                    <div class="card listing-card col" style="width: 20rem;">
-                        <img src="<%=listing.image%>" class="card-img-top" alt="listing_image" style="height:20rem">
-                        <div class="card-img-overlay">ABCDEF</div>
-                        <div class="card-body">
-                            <p class="card-text">
-                                <b>
-                                    <%=listing.title%>
-                                </b><br>
-                                &#8377; <%=listing.price.toLocaleString("en-IN")%>
-                            </p>
+                        <div class="card listing-card col" style="width: 20rem;">
+                            <img src="<%=listing.image%>" class="card-img-top" alt="listing_image" style="height:20rem">
+                            <div class="card-img-overlay">ABCDEF</div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <b>
+                                        <%=listing.title%>
+                                    </b><br>
+                                    &#8377; <%=listing.price.toLocaleString("en-IN")%>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </a>
-                <%}%>
-        </div>
+                    </a>
+                    <%}%>
+            </div>
 
 
-        <!-- <ul>
+            <!-- <ul>
                     <%for(let listing of data){%>
                         <li><a href="/listings/<%=listing._id%>">
                                 <%=listing.title%>
@@ -36,4 +37,4 @@
                         <%}%>
                 </ul> -->
 
-    </body>
+        </body>
