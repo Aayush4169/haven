@@ -14,6 +14,7 @@ const Expresserror = require("./utils/customerror.js");
 // this  is join for validation
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/reviews.js");
+const userRouter = require("./routes/user.js");
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -71,7 +72,7 @@ app.get("/demouser", async (req, res, next) => {
 });
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
-
+app.use("/", userRouter);
 app.all("/*splat", (req, res, next) => {
   next(new Expresserror(404, "page not found"));
 });

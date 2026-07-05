@@ -4,6 +4,7 @@ const listing = require("../models/listing.js");
 const wrapasync = require("../utils/wrapasync");
 const Expresserror = require("../utils/customerror.js");
 const { listingSchema, reviewSchema } = require("../schema.js");
+const isloggin = require("../middleware.js");
 
 function validation(req, res, next) {
   let { error } = listingSchema.validate(req.body);

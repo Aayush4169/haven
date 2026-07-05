@@ -1,0 +1,31 @@
+<% layout("/layouts/biolerplate")-%>
+
+    <body>
+        <div class="row mt-3 ">
+            <h2 class="col-8 offset-3 my-2">SigIn on haven</h2>
+            <div class="col-8 offset-2  my-5">
+
+                <form method="POST" action="/login" class="needs-validation" novalidate>
+
+
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid usernmae.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="text" id="password" name="password" class="form-control" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid password.
+                        </div>
+                    </div>
+                    <button class="btn btn-dark">submit</button>
+                </form>
+            </div>
+        </div>
+    </body>
