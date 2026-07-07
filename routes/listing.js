@@ -30,12 +30,13 @@ router.get(
 );
 // add new listing route
 
-router.get("/new", (req, res) => {
+router.get("/new", isloggin, (req, res) => {
   res.render("listing/new.ejs");
 });
 // create  Route
 router.post(
   "/",
+  isloggin,
   validation,
   wrapasync(async (req, res, next) => {
     const data = req.body.listing;
@@ -50,6 +51,7 @@ router.post(
 // edit render the page
 router.get(
   "/:id/edit",
+  isloggin,
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
@@ -60,7 +62,9 @@ router.get(
 // put method to update the data
 router.put(
   "/:id",
+  isloggin,
   validation,
+
   wrapasync(async (req, res) => {
     let { id } = req.params;
     await listing.findByIdAndUpdate(id, { ...req.body.listing });
@@ -71,6 +75,7 @@ router.put(
 // delete route
 router.delete(
   "/:id",
+  isloggin,
   wrapasync(async (req, res) => {
     console.log("delete route hit ittt");
     let { id } = req.params;
@@ -82,6 +87,7 @@ router.delete(
 //  show routeee
 router.get(
   "/:id",
+  isloggin,
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id).populate("reviews");

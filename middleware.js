@@ -1,7 +1,8 @@
-module.exports.LoggedIn = (req, res, next) => {
+const LoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.flash("error", "please login first");
-    res.redirect("/login");
+    return res.redirect("/login");
   }
   next();
 };
+module.exports = LoggedIn;
