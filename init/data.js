@@ -348,5 +348,8 @@ const sampleListings = [
 sampleListings.forEach((listing) => {
   listing.image = listing.image.url;
 });
+sampleListings.forEach((listing) => {
+  listing.owner = "6a4a47f0b95e54eca88bd87b";
+});
 
 module.exports = { data: sampleListings };

@@ -4,7 +4,7 @@ const listing = require("../models/listing.js");
 const wrapasync = require("../utils/wrapasync");
 const Expresserror = require("../utils/customerror.js");
 const { listingSchema, reviewSchema } = require("../schema.js");
-const isloggin = require("../middleware.js");
+const { isloggin } = require("../middleware.js");
 
 function validation(req, res, next) {
   let { error } = listingSchema.validate(req.body);
@@ -42,8 +42,9 @@ router.post(
     const data = req.body.listing;
 
     let newdata = new listing(data);
-
+    newdata.owner = req.user._id;
     await newdata.save();
+
     req.flash("sucess", "listing is added successfully");
     res.redirect("/listings");
   }),
@@ -90,7 +91,7 @@ router.get(
   isloggin,
   wrapasync(async (req, res) => {
     let { id } = req.params;
-    let data = await listing.findById(id).populate("reviews");
+    let data = await listing.findById(id).populate("reviews").populate("owner");
     if (!data) {
       req.flash("error", "listing is not available");
       return res.redirect("/listings");
