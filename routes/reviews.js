@@ -1,20 +1,10 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const review = require("../models/review.js");
-const { listingSchema, reviewSchema } = require("../schema.js");
-const Expresserror = require("../utils/customerror.js");
+
 const wrapasync = require("../utils/wrapasync");
 const listing = require("../models/listing.js");
-function validaterev(req, res, next) {
-  console.log("Review route hit");
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errmsg = error.details.map((ele) => ele.message);
-    throw new Expresserror(403, errmsg);
-  } else {
-    next();
-  }
-}
+const { validaterev, isloggin, isReviewowner } = require("../middleware.js");
 
 // llisting routing
 
@@ -35,11 +25,13 @@ function validaterev(req, res, next) {
 
 router.post(
   "/",
+  isloggin,
   validaterev,
   wrapasync(async (req, res) => {
     let rev = req.body.review;
     let id = req.params.id;
     let newrev = new review(rev);
+    newrev.author = req.user._id;
     await newrev.save();
     let Listing = await listing.findById(id);
     Listing.reviews.push(newrev);
@@ -51,6 +43,8 @@ router.post(
 // deleet  route
 router.delete(
   "/:reviewId",
+  isloggin,
+  isReviewowner,
   wrapasync(async (req, res) => {
     console.log("Review route hitvalidateeeeee");
     let { id, reviewId } = req.params;

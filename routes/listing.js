@@ -2,23 +2,9 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const listing = require("../models/listing.js");
 const wrapasync = require("../utils/wrapasync");
-const Expresserror = require("../utils/customerror.js");
-const { listingSchema, reviewSchema } = require("../schema.js");
-const { isloggin } = require("../middleware.js");
 
-function validation(req, res, next) {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    const errmsg = error.details
-      .map((ele) => {
-        return ele.message;
-      })
-      .join(",");
-    throw new Expresserror(403, errmsg);
-  } else {
-    next();
-  }
-}
+const { isloggin, isowner, validation } = require("../middleware.js");
+
 // index route showing all the data
 router.get(
   "/",
@@ -53,6 +39,7 @@ router.post(
 router.get(
   "/:id/edit",
   isloggin,
+  isowner,
   wrapasync(async (req, res) => {
     let { id } = req.params;
     let data = await listing.findById(id);
@@ -64,6 +51,7 @@ router.get(
 router.put(
   "/:id",
   isloggin,
+  isowner,
   validation,
 
   wrapasync(async (req, res) => {
@@ -77,6 +65,7 @@ router.put(
 router.delete(
   "/:id",
   isloggin,
+  isowner,
   wrapasync(async (req, res) => {
     console.log("delete route hit ittt");
     let { id } = req.params;
@@ -88,10 +77,17 @@ router.delete(
 //  show routeee
 router.get(
   "/:id",
-  isloggin,
   wrapasync(async (req, res) => {
     let { id } = req.params;
-    let data = await listing.findById(id).populate("reviews").populate("owner");
+    let data = await listing
+      .findById(id)
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "author",
+        },
+      })
+      .populate("owner");
     if (!data) {
       req.flash("error", "listing is not available");
       return res.redirect("/listings");
